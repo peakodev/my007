@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+agent_book = {path = '../agent_book/', editable = true}
+agent_notes = {path = '../agent_notes/', editable = true}
+xfiles_sorter = {path = '../xfiles_sorter/', editable = true}
+prompt-toolkit = "*"
+colorama = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
