@@ -9,8 +9,11 @@ agent_notes = {path = '../agent_notes/', editable = true}
 xfiles_sorter = {path = '../xfiles_sorter/', editable = true}
 prompt-toolkit = "*"
 colorama = "*"
+setuptools = "*"
+faker = "*"
+jamesbot = {file = "."}
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"

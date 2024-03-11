@@ -1,6 +1,7 @@
-from .field import Field
+from .field import Field, validator
 from ..exceptions import WrongNameLengthException, WrongCountryException, EnumValueNotExist, AgentBookException
 from ..enums import CountryEnum, UKRAINIAN_REGIONS, US_STATES
+from abc import ABC
 import re
 
 
@@ -31,7 +32,7 @@ def get_enum_by_value(enum_class, value):
     raise EnumValueNotExist(f"{value} is not a valid value for {enum_class.__name__}")
 
 
-class CountryBasedField(Field):
+class CountryBasedField(Field, ABC):
     def __init__(self, value, country: CountryEnum):
         if not country:
             raise WrongCountryException(value)
@@ -78,16 +79,21 @@ class City(Field):
 
 class Country(Field):
 
+    def _validate(self, value):
+        try:
+            self._value = get_enum_by_value(CountryEnum, value)
+        except EnumValueNotExist:
+            raise WrongCountryException
+
     @property
     def value(self) -> CountryEnum:
         return self._value
 
     @value.setter
+    @validator
     def value(self, value: str):
-        try:
-            self._value = get_enum_by_value(CountryEnum, value)
-        except EnumValueNotExist:
-            raise WrongCountryException
+        if not self._value:
+            self._validate(value)
 
     def __str__(self):
         return str(self.value.value)

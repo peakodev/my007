@@ -1,15 +1,14 @@
-from .bot_class import Bot
+from bot_class import Bot
 from xfiles_sorter import organize_files
 from prompt_toolkit import prompt
-from .toolbar import style, bottom_toolbar, rprompt
-from .completer import completer, completer_books, completer_files
+from toolbar import style, bottom_toolbar, rprompt
+from completer import completer, completer_books, completer_files
 from colorama import init
-from agent_book import Address
+from agent_book import Address, generate_agent_book
 
 from colorama import Fore, Back, Style
 
 init()
-book = Bot().book
 
 
 def show_help():  # separated help command for different modes
@@ -54,12 +53,9 @@ def show_help():  # separated help command for different modes
 
 def bot_exit():
     print("Good bye")
-    Bot().notes.serialize
-    Bot().book.serialize(book)
+    Bot().notes.serialize()
+    Bot().book.serialize()
     Bot().running = False
-
-
-'''---------------- 22.02.24 -----------------'''
 
 
 def check_param(num_of_param, plus='+'):
@@ -79,7 +75,7 @@ def check_param(num_of_param, plus='+'):
 
             record = None
             if plus == '+':
-                record = book.find_record(param[0])
+                record = Bot().book.find_record(param[0])
                 if record == None:
                     raise ValueError('Користувач ' + Fore.LIGHTBLUE_EX + f' {param[0]} ' + Fore.RED + \
                                      "відсутній в телефонній книзі")
@@ -100,13 +96,13 @@ def add_user(param, empty):
     else:
         birthday = None
 
-    book.add(name_user, num_phone, birthday)
+    Bot().book.add(name_user, num_phone, birthday)
     return 'Користувач ' + Fore.LIGHTBLUE_EX + f' {param[0]} ' + Fore.RESET + ' додан до телефонної книги'
 
 
 @check_param(1)
 def del_user(param, empty):
-    book.delete(param[0])
+    Bot().book.delete(param[0])
     return 'Користувач ' + Fore.LIGHTBLUE_EX + f' {param[0]} ' + Fore.RESET + \
         ' вилучен з телефонної книги '
 
@@ -142,14 +138,14 @@ def del_phone(param, record):
 
 @check_param(2)
 def add_birthday(param, record):
-    book.add_birthday(param[0], param[1].replace('.', '-'))
+    Bot().book.add_birthday(param[0], param[1].replace('.', '-'))
     return 'Користувачеві ' + Fore.LIGHTBLUE_EX + f' {param[0]} ' + Fore.RESET + \
         ' встановлено день народження ' + Fore.LIGHTBLUE_EX + f' {param[1]} ' + Fore.RESET
 
 
 @check_param(2)
 def add_email(param, record):
-    book.add_email(param[0], param[1])
+    Bot().book.add_email(param[0], param[1])
     return 'Користувачеві ' + Fore.LIGHTBLUE_EX + f' {param[0]} ' + Fore.RESET + \
         ' встановлено Emall ' + Fore.LIGHTBLUE_EX + f' {param[1]} ' + Fore.RESET
 
@@ -163,7 +159,7 @@ def next_birthday(param, record):
 
 @check_param(1, '-')
 def find_users(param, record):
-    list_user = book.find(param[0])
+    list_user = Bot().book.find(param[0])
     if len(list_user) == 0:
         return Fore.LIGHTYELLOW_EX + 'Користувачів із зазначеними параметрами не знайдено'
 
@@ -183,12 +179,9 @@ def show_all():
 
 @check_param(1)
 def find_phone(param, record):
-    phones = book.get_phones(param[0])
+    phones = Bot().book.get_phones(param[0])
 
     print(', '.join([str(phone) for phone in phones]))
-
-
-'''-------------------------------------------------------------------------------------'''
 
 
 def input_handler(input_string):
@@ -223,6 +216,12 @@ def book_command_handler(command, input_string):
         return user_command()
 
 
+def generate_test_book():
+    generate_agent_book(Bot().book, 30, required_birthday=True)
+    generate_agent_book(Bot().book, 30, required_birthday=True)
+    generate_agent_book(Bot().book, 40)
+
+
 def bot_start():
     bot = Bot()
     COMMANDS = {
@@ -251,8 +250,8 @@ def bot_start():
         'remove_note': bot.notes.remove_note,
         'notes_find': bot.notes.find_notes,
 
-        'organize_files': organize_files
-
+        'organize_files': organize_files,
+        'generate_test_book': generate_test_book
     }
     bot.commands = COMMANDS
     bot.change_mode()  # Asking user to choose mode
@@ -267,17 +266,17 @@ def bot_start():
             except Exception as e:
                 print(e)
         elif bot.mode == '1':  # Books loop
-            try:
-                user_input = prompt(">>", completer=completer_books, bottom_toolbar=bottom_toolbar, style=style,
-                                    complete_while_typing=True)
-                user_command, input_string = input_handler(str(user_input))
-                # print('You entered command:', user_command, "with such params", input_string)
-                result = book_command_handler(user_command, input_string)
-                if result:
-                    print(result)
+            # try:
+            user_input = prompt(">>", completer=completer_books, bottom_toolbar=bottom_toolbar, style=style,
+                                complete_while_typing=True)
+            user_command, input_string = input_handler(str(user_input))
+            # print('You entered command:', user_command, "with such params", input_string)
+            result = book_command_handler(user_command, input_string)
+            if result:
+                print(result)
 
-            except Exception as e:
-                print(e)
+        # except Exception as e:
+        #     print(e)
         elif bot.mode == '3':
             try:
                 user_input = prompt(">>", completer=completer_files, bottom_toolbar=bottom_toolbar, style=style,

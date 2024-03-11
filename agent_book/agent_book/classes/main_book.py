@@ -1,7 +1,6 @@
 import pickle
 from collections import UserDict
 from pathlib import Path
-from ..fs import datadir
 from .record import Record
 from .book_fields import Phone
 from .address_fields import Address
@@ -9,21 +8,22 @@ from ..exceptions import TooSmallQueryException, CallSignNotFoundException, Call
 
 
 class AgentBook(UserDict):
-    dump_file_name = Path(__file__).parent / 'book.pkl'
 
-    @staticmethod
-    def serialize(obj):
-        with open(AgentBook.dump_file_name, "wb") as file:
-            pickle.dump(obj, file)
+    def __init__(self, dump_file_name=Path(__file__).parent / 'book.pkl'):
+        super().__init__()
+        self.dump_file_name = dump_file_name
 
-    @staticmethod
-    def deserialize():
+    def serialize(self):
+        with open(self.dump_file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    def deserialize(self):
         try:
-            with open(AgentBook.dump_file_name, "rb") as file:
+            with open(self.dump_file_name, "rb") as file:
                 obj = pickle.load(file)
             return obj
         except FileNotFoundError:
-            return AgentBook()
+            return AgentBook(self.dump_file_name)
 
     def add(self, call_sign, phone: str = None, email: str = None, birthday: str = None) -> Record:
         if self.data.get(call_sign, None):

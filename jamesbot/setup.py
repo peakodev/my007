@@ -4,7 +4,7 @@ setup(
     name='jamesbot',
     version='0.0.1',
     entry_points={
-        'console_scripts': ['jamesbot = jamesbot.jamesbot:bot_start']
+        'console_scripts': ['james = jamesbot.jamesbot:bot_start']
     },
     description='jamesbot',
     author='Team007',

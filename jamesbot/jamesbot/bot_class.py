@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from agent_notes import AgentNotes, SEPARATOR
 from agent_book import AgentBook, AgentBookIterator, ComingUpBirthdayAgentBookIterator
 from prompt_toolkit import prompt
@@ -34,13 +36,13 @@ class Bot:
     @property
     def notes(self):  # deserialize notes
         if self.__notes is None:
-            self.__notes = AgentNotes().deserialize()
+            self.__notes = AgentNotes(Path(__file__).parent.parent / 'notes.pkl').deserialize()
         return self.__notes
 
     @property
     def book(self) -> AgentBook:
         if self.__book is None:
-            self.__book = AgentBook().deserialize()
+            self.__book = AgentBook(Path(__file__).parent.parent / 'book.pkl').deserialize()
         return self.__book
 
     @property
@@ -60,34 +62,34 @@ class Bot:
         self.__mode = value
 
     def iterate_book(self):
-        max_key_length = max(len(key) for key in self.book.keys())
-        print(max_key_length)
-
         max_name = 0
         max_phone = 0
-        max_emai = 0
-        for value in self.book.data.items():
-            Name = str(value[1].call_sign)
-            email = str(value[1].email) if value[1].email is not None else 'Не вказано'
-            phones = ', '.join([str(phone) for phone in value[1].phones])
-            birthday = str(value[1].days_to_birthday()) if value[1].birthday is not None else "Не вказано"
-            max_name = len(max(Name, key=lambda x: len(x))) if len(
-                max(Name, key=lambda x: len(x))) > max_name else max_name
+        max_email = 0
+        for record in AgentBookIterator(self.book):
+            name = str(record.call_sign.value)
+            email = str(record.email) if record.email is not None else 'Не вказано'
+            phones = ', '.join([str(phone) for phone in record.phones])
+            max_name = len(max(name, key=lambda x: len(x))) if len(
+                max(name, key=lambda x: len(x))) > max_name else max_name
             max_phone = len(max(phones, key=lambda x: len(x))) if len(
-                max(Name, key=lambda x: len(x))) > max_phone else max_phone
-            max_emai = len(max(email, key=lambda x: len(x))) if len(
-                max(Name, key=lambda x: len(x))) > max_emai else max_emai
+                max(name, key=lambda x: len(x))) > max_phone else max_phone
+            max_email = len(max(email, key=lambda x: len(x))) if len(
+                max(name, key=lambda x: len(x))) > max_email else max_email
 
-        print(" | {:15} | {:15} | {:15} | {:15} |".format('Agent call sign'.ljust(max_name),
-                                                          'Email'.ljust(max_emai),
-                                                          'Phones'.ljust(max_phone), 'Days to birthday', 'Address'))
-        for value in self.book.data.items():
-            Name = str(value[1].call_sign)
-            email = str(value[1].email) if value[1].email is not None else 'Не вказано'
-            phones = ', '.join([str(phone) for phone in value[1].phones])
-            birthday = str(value[1].days_to_birthday()) if value[1].birthday is not None else "Не вказано"
+        print(" | {:15} | {:15} | {:15} | {:15} |".format(
+            'Agent call sign'.ljust(max_name),
+            'Email'.ljust(max_email),
+            'Phones'.ljust(max_phone),
+            'Days to birthday',
+            'Address')
+        )
+        for record in AgentBookIterator(self.book):
+            name = str(record.call_sign)
+            email = str(record.email) if record.email is not None else 'Не вказано'
+            phones = ', '.join([str(phone) for phone in record.phones])
+            birthday = str(record.days_to_birthday()) if record.birthday is not None else "Не вказано"
 
-            print(" | {:15} | {:15} | {:15} | {:15} |".format(Name.ljust(max_name), email.ljust(max_emai),
+            print(" | {:15} | {:15} | {:15} | {:15} |".format(name.ljust(max_name), email.ljust(max_email),
                                                               phones, birthday) + SEPARATOR)
 
     def birthday_iterate_book(self, days: int = 7):

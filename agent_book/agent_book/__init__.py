@@ -2,6 +2,7 @@ from .classes import (AgentBook, Address, Record, AgentBookIterator, PaginatedAg
                       ComingUpBirthdayAgentBookIterator)
 from .enums import DATE_FORMAT, UKRAINIAN_REGIONS
 from .exceptions import AgentBookException, CallSignNotFoundException, CallSignAlreadyExistException
+from .generate_book import generate_agent_book
 
 __all__ = [
     'AgentBook',
@@ -14,5 +15,6 @@ __all__ = [
     'CallSignAlreadyExistException',
     'Address',
     'DATE_FORMAT',
-    'UKRAINIAN_REGIONS'
+    'UKRAINIAN_REGIONS',
+    'generate_agent_book'
 ]

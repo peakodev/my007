@@ -1,4 +1,5 @@
 from ..exceptions import AgentBookException
+from abc import ABC, abstractmethod
 
 
 def validator(setter_func):
@@ -16,11 +17,12 @@ def validator(setter_func):
     return wrapper
 
 
-class Field:
+class Field(ABC):
     def __init__(self, value):
         self._value = None
         self.value = value
 
+    @abstractmethod
     def _validate(self, value):
         return True
 
