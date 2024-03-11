@@ -1,10 +1,8 @@
-from prompt_toolkit import prompt
 from prompt_toolkit.styles import Style
 from .bot_class import Bot
 
-style = Style.from_dict({
-    # 'rprompt': 'bg:#ff0066 #ffffff',
 
+style = Style.from_dict({
     "bottom-toolbar.text": "#000000 bg:#ff00ff",
     "completion-menu.completion.current": "bg:#00aaaa #000000",
     "completion-menu.completion": "bg:#008888 #ffffff"

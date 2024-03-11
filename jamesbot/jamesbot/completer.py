@@ -1,17 +1,5 @@
 from prompt_toolkit.completion import NestedCompleter
 
-# completer = NestedCompleter.from_nested_dict({
-#     'show': {'notes': {'all': None}, 'agents': {'all': None, 'birthday': None}},
-#     'note': {'add': None},
-#     'agent': {'add': None},
-#     'add': {'note': None, 'agent': None},
-#     'edit': {'note': None, 'agent': {'call-sign': None}},
-#     'remove': {'note': None, 'agent': None},
-#     'find': {'notes': None, 'agent': {'phones': None}},
-#     'organize': {'files': None},
-#     'help': None,
-#     'exit': None,
-# })
 completer = NestedCompleter.from_nested_dict({  # autocompleter for Notes mode
     'show_note_all': None,
     'new_note': None,
