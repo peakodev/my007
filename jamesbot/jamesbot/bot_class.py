@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from agent_notes import AgentNotes, SEPARATOR
-from agent_book import AgentBook, AgentBookIterator, ComingUpBirthdayAgentBookIterator
+from agent_book import AgentBook, AgentBookIterator, ComingUpBirthdayAgentBookIterator, SimpleConsoleView
 from prompt_toolkit import prompt
 
 
@@ -62,40 +62,11 @@ class Bot:
         self.__mode = value
 
     def iterate_book(self):
-        max_name = 0
-        max_phone = 0
-        max_email = 0
-        for record in AgentBookIterator(self.book):
-            name = str(record.call_sign.value)
-            email = str(record.email) if record.email is not None else 'Не вказано'
-            phones = ', '.join([str(phone) for phone in record.phones])
-            max_name = len(max(name, key=lambda x: len(x))) if len(
-                max(name, key=lambda x: len(x))) > max_name else max_name
-            max_phone = len(max(phones, key=lambda x: len(x))) if len(
-                max(name, key=lambda x: len(x))) > max_phone else max_phone
-            max_email = len(max(email, key=lambda x: len(x))) if len(
-                max(name, key=lambda x: len(x))) > max_email else max_email
-
-        print(" | {:15} | {:15} | {:15} | {:15} |".format(
-            'Agent call sign'.ljust(max_name),
-            'Email'.ljust(max_email),
-            'Phones'.ljust(max_phone),
-            'Days to birthday',
-            'Address')
-        )
-        for record in AgentBookIterator(self.book):
-            name = str(record.call_sign)
-            email = str(record.email) if record.email is not None else 'Не вказано'
-            phones = ', '.join([str(phone) for phone in record.phones])
-            birthday = str(record.days_to_birthday()) if record.birthday is not None else "Не вказано"
-
-            print(" | {:15} | {:15} | {:15} | {:15} |".format(name.ljust(max_name), email.ljust(max_email),
-                                                              phones, birthday) + SEPARATOR)
+        SimpleConsoleView(AgentBookIterator(self.book)).render()
 
     def birthday_iterate_book(self, days: int = 7):
         print(f'Targets in next {days} days:')
-        for i, record in enumerate(ComingUpBirthdayAgentBookIterator(self.book, days)):
-            print(f'{i}: {record}')
+        SimpleConsoleView(ComingUpBirthdayAgentBookIterator(self.book, days)).render()
 
     def change_mode(self):
         print("Please select:\n")

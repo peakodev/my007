@@ -1,9 +1,13 @@
-from faker import Faker
-from random import randint, choice
 from datetime import date, timedelta
-from agent_book import (AgentBook, Record, PaginatedAgentBookIterator, Address, DATE_FORMAT,
-                        AgentBookException, UKRAINIAN_REGIONS, CallSignNotFoundException,
-                        AgentBookIterator, ComingUpBirthdayAgentBookIterator)
+from random import randint, choice
+
+from .enums import DATE_FORMAT, UKRAINIAN_REGIONS
+from .exceptions import AgentBookException, CallSignNotFoundException
+from .views import PrintView, SimpleConsoleView
+from faker import Faker
+
+from .classes import (AgentBook, Record, Address, ComingUpBirthdayAgentBookIterator, AgentBookIterator,
+                      PaginatedAgentBookIterator)
 
 
 def test_change_call_sign(book):
@@ -24,22 +28,23 @@ def test_change_call_sign(book):
 
     book.add('Вʼячеслав')
 
-    iterate_book(book)
+    iterate_book_print_view(book)
 
 
-def iterate_book(book):
-    print(f'Iterate AgentBook items:')
-    for i, record in enumerate(AgentBookIterator(book)):
-        print(f'{i}: {record}')
+def iterate_book_print_view(book):
+    print(f'Iterate AgentBook items (PrintView):')
+    PrintView(AgentBookIterator(book)).render()
 
 
-def paginate_book(book, count_of_elements=3):
-    # Iterate by 3 items per page
-    print(f'\nIterate by {count_of_elements} items per page:')
-    for i, records in enumerate(PaginatedAgentBookIterator(book, count_of_elements)):
-        print(f"Portion {i + 1}: ")
-        for pi in range(len(records)):
-            print(f"{records[pi]}")
+def iterate_book_simple_view(book):
+    print(f'Iterate AgentBook items (SimpleConsoleView):')
+    SimpleConsoleView(AgentBookIterator(book)).render()
+
+
+def paginate_book(book, count_of_elements=10, page_number=1):
+    print(f'\nIterate by {count_of_elements} items per {page_number} page:')
+    view = SimpleConsoleView(PaginatedAgentBookIterator(book, count_of_elements, page_number))
+    view.render()
 
 
 def generate_call_sign(book, temp_fake, search_in_book=True, call_sign=None):
@@ -92,8 +97,7 @@ def create_fake_record(book, def_date, search_in_book=True, required_birthday=Fa
 
 def birthday_iterate_book(book, days: int = 5):
     print(f'Iterate coming up birthday AgentBook items:')
-    for i, record in enumerate(ComingUpBirthdayAgentBookIterator(book, days)):
-        print(f'{i}: {record}')
+    PrintView(ComingUpBirthdayAgentBookIterator(book, days)).render()
 
 
 if __name__ == '__main__':
@@ -102,5 +106,7 @@ if __name__ == '__main__':
     generate_agent_book(mybook, 30, required_birthday=True)
     generate_agent_book(mybook, 30, required_birthday=True)
     generate_agent_book(mybook, 40)
-    paginate_book(mybook, 12)
+    iterate_book_print_view(mybook)
+    iterate_book_simple_view(mybook)
+    paginate_book(mybook, 12, 1)
     birthday_iterate_book(mybook)
