@@ -1,8 +1,8 @@
-from bot_class import Bot
+from jamesbot.bot_class import Bot
 from xfiles_sorter import organize_files
 from prompt_toolkit import prompt
-from toolbar import style, bottom_toolbar, rprompt
-from completer import completer, completer_books, completer_files
+from jamesbot.toolbar import style, bottom_toolbar, rprompt
+from jamesbot.completer import completer, completer_books, completer_files
 from colorama import init
 from agent_book import Address, generate_agent_book
 

@@ -14,6 +14,8 @@ setup(
         'agent_notes>=0.0.1',
         'agent_book>=0.0.5',
         'xfiles_sorter>=0.0.1',
-        'faker'
+        'faker',
+        'prompt_toolkit',
+        'colorama'
     ],
 )

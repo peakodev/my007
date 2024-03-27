@@ -1,5 +1,5 @@
 from prompt_toolkit.styles import Style
-from bot_class import Bot
+from jamesbot.bot_class import Bot
 
 
 style = Style.from_dict({
